@@ -3,8 +3,8 @@ import tensorflow as tf
 import numpy as np
 import matplotlib.pyplot as plt
 
-from tensorflow.keras.optimizers import Adam
-from tensorflow.keras.callbacks import ModelCheckpoint
+from keras.optimizers import Adam
+from keras.callbacks import ModelCheckpoint
 
 from models.siamese_model import siamese
 
@@ -14,7 +14,7 @@ from utils.misc import plot_history
 from configs.parameters import properties
 
 if __name__ == "__main__":
-    train_dataset = SiameseDataGenerator(None, "./full(0)/train", properties)
+    train_dataset = SiameseDataGenerator(None, "./data", properties)
 
     model = siamese
 
@@ -30,10 +30,10 @@ if __name__ == "__main__":
         metrics=["binary_accuracy"]
     )
 
-    model.fit(
+    history = model.fit(
         train_dataset,
         epochs=properties["epochs"],
         callbacks=[checkpoint_callback]
     )
 
-
+    plot_history(hist=history)
