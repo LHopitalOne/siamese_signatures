@@ -1,3 +1,4 @@
+from keras import activations
 import tensorflow as tf
 
 import tensorflow.keras.backend as K
@@ -37,7 +38,8 @@ mobilenet = MobileNetV2(input_shape=(256, 256, 1), include_top=False, weights=No
 x = mobilenet.output
 
 x = Flatten()(x)
-x = Dense(128, activation="relu", kernel_regularizer="l2")(x)
+x = Dense(128, activation="relu")(x) 
+x = Dense(10, activation="sigmoid")(x) 
 
 mobilenet = Model(mobilenet.input, x)
 
