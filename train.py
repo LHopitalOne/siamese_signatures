@@ -1,10 +1,11 @@
 import os
+from cv2 import TermCriteria_COUNT
 import tensorflow as tf
 import numpy as np
 import matplotlib.pyplot as plt
 
-from keras.optimizers import Adam
-from keras.callbacks import ModelCheckpoint
+from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.callbacks import ModelCheckpoint
 
 from models.siamese_model import siamese
 
@@ -28,6 +29,7 @@ if __name__ == "__main__":
         loss="binary_crossentropy", 
         optimizer=Adam(learning_rate=properties["learning_rate"]), 
         metrics=["binary_accuracy"]
+
     )
 
     history = model.fit(
