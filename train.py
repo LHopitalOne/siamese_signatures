@@ -16,7 +16,7 @@ from utils.misc import plot_history
 from configs.parameters import properties
 
 if __name__ == "__main__":
-    train_dataset = SiameseDataGenerator(directory="data", augmentations=None, properties=properties)
+    train_dataset = SiameseDataGenerator(directory="train", augmentations=None, properties=properties)
 
     model = siamese
 
@@ -60,4 +60,4 @@ if __name__ == "__main__":
     #     epochs=20
     # )
 
-    # plot_history(hist=history)
+    plot_history(hist=history)

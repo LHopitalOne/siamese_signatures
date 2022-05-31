@@ -5,7 +5,6 @@ import glob
 import tensorflow as tf
 import numpy as np
 
-
 class SiameseDataGenerator(tf.keras.utils.Sequence):
     def __init__(self, directory, augmentations, properties):
         self.augmentations = augmentations
@@ -14,7 +13,6 @@ class SiameseDataGenerator(tf.keras.utils.Sequence):
         self.dim = properties["target_size"]
 
         self._list_folders = self.__get_folders_list(directory)
-        # self.pair_combinations = self.__get_all_combinations()
 
         print(self._list_folders[:10])
 
@@ -24,9 +22,8 @@ class SiameseDataGenerator(tf.keras.utils.Sequence):
     def __getitem__(self, index):
         x1_batch = np.ones((self.batch_size, self.dim[0], self.dim[1], 1))
         x2_batch = np.ones((self.batch_size, self.dim[0], self.dim[1], 1))
+        
         y_batch = np.ones((self.batch_size, 1))
-
-        # print("batch size:", self.batch_size)
 
         _list_folders = self._list_folders[index * self.batch_size: (index + 1) * self.batch_size]
 
@@ -34,22 +31,33 @@ class SiameseDataGenerator(tf.keras.utils.Sequence):
             is_same = np.random.choice([0, 1], p=[0.8, 0.2])
 
             img1_path = np.random.choice(_list_folders)
-            img1 = self.__load_img(np.random.choice(glob.glob(os.path.join(self.directory, img1_path) + "/*.*")))
+            img1_folder = img1_path[len(self.directory) + 1:len(self.directory) + 4]
+
+            img1 = self.__load_img(img1_path)
+            # img1 = self.__load_img(np.random.choice(glob.glob(os.path.join(self.directory, img1_path) + "/*.*")))
 
             # print("is_same:", is_same)
 
             if is_same == 1:
-                img2 = self.__load_img(np.random.choice(glob.glob(os.path.join(self.directory, img1_path) + "/*.*")))
+                img2_path = np.random.choice(glob.glob(os.path.join(self.directory, img1_folder,  "*.*")))
+                img2 = self.__load_img(img2_path)
 
-                # print("true y_batch:", y_batch, "i_true ", i)
+                print("true img1/img2:", img1_path, img2_path)
+                # img2 = self.__load_img(np.random.choice(glob.glob(os.path.join(self.directory, img1_path) + "/*.*")))
             else:
                 img2_path = np.random.choice(_list_folders)
-                while img2_path == img1_path:
+                img2_folder = img2_path[len(self.directory) + 1:len(self.directory) + 4]
+
+                while img2_folder == img1_folder:
                     img2_path = np.random.choice(_list_folders)
-                img2 = self.__load_img(np.random.choice(glob.glob(os.path.join(self.directory, img2_path) + "/*.*")))
+                    img2_folder = img2_path[len(self.directory) + 1:len(self.directory) + 4]
+                
+                img2 = self.__load_img(img2_path)
+                # img2 = self.__load_img(np.random.choice(glob.glob(os.path.join(self.directory, img2_path) + "/*.*")))
 
                 y_batch[i] = 0
 
+                # print("false img1/img2:", img1_path, img2_path)
                 # print("false batch:", y_batch, "i_false: ", i)
 
             x1_batch[i] = img1
@@ -70,15 +78,12 @@ class SiameseDataGenerator(tf.keras.utils.Sequence):
 
         return img
 
-    def __get_all_combinations(self):
-        return sorted(list(itertools.combinations(glob.glob(os.path.join(self.directory, "*", "*")), 2)))
-
     def __get_folders_list(self, path):
         # TODO: this function should read all images from each folder
         #       the rest of the code should be modified accordingly
-        _list = glob.glob(os.path.join(path, "*"))
+        _list = glob.glob(os.path.join(path, "*/*"))
 
-        for i in range(len(_list)):
-            _list[i] = _list[i][len(path) + 1:]
+        # for i in range(len(_list)):
+        #     _list[i] = _list[i][len(path) + 1:]
 
         return _list
