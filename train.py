@@ -16,7 +16,7 @@ from utils.misc import plot_history
 from configs.parameters import properties
 
 if __name__ == "__main__":
-    train_dataset = SiameseDataGenerator(None, "./train", properties)
+    train_dataset = SiameseDataGenerator(directory="data", augmentations=None, properties=properties)
 
     model = siamese
 
@@ -47,8 +47,9 @@ if __name__ == "__main__":
     # print(np.array(train_2).shape)
     # print(np.array(train_3).shape)
 
-    history = model.fit_generator(
-        generator=train_dataset,
+    history = model.fit(
+        train_dataset,
+        validation_data=train_dataset,
         epochs=properties["epochs"],
         callbacks=[checkpoint_callback]
     )
